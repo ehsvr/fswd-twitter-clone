@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 import './home.scss';
 
 const Home = props => (
-  <h1>Home page react is working</h1>
+  <h1>Hello World</h1>
 )
 
 document.addEventListener('DOMContentLoaded', () => {
