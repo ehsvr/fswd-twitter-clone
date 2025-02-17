@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
   root 'static_pages#home'
-
+  get '/login' => 'static_pages#login'
+  get '/signup' => 'static_pages#signup'
+  get '/notifications' => 'static_pages#notifications'
+  get '/profile' => 'static_pages#profile'
   namespace :api do
     # USERS
     post '/users'                  => 'users#create'
+    get  '/users/:username'        => 'users#show'  # Added this to fetch user profile
 
     # SESSIONS
     post '/sessions'               => 'sessions#create'
@@ -18,6 +22,5 @@ Rails.application.routes.draw do
     get  '/tweets/search/:keyword' => 'tweets#search'
   end
 
-  get '*path' => 'static_pages#home'
-  # if you are using active storage to upload and store images, comment the above line
+  get '*path', to: 'static_pages#home', constraints: ->(req) { !req.xhr? && req.format.html? }
 end
