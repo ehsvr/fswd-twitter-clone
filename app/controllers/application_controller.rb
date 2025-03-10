@@ -1,13 +1,28 @@
 class ApplicationController < ActionController::Base
-    private
+    protect_from_forgery with: :exception
+    before_action :set_csrf_cookie
+  
+    helper_method :current_user
   
     def current_user
-        token = cookies.signed[:airbnb_session_token]
-        session = Session.find_by(token: token)
-        if session
-            @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
-        else
-            @current_user = nil
-        end
+      return @current_user if defined?(@current_user)
+  
+      token = cookies.signed[:twitter_session_token] # 🔥 Get token from cookies
+      session = Session.find_by(token: token) # 🔥 Find session by token
+  
+      @current_user = session&.user # 🔥 Retrieve user if session exists
     end
-end
+  
+    def authenticate_user!
+      unless current_user
+        render json: { error: "You must be logged in" }, status: :unauthorized
+      end
+    end
+  
+    private
+  
+    def set_csrf_cookie
+      cookies["CSRF-TOKEN"] = form_authenticity_token
+    end
+  end
+  

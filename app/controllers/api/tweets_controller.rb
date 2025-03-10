@@ -1,48 +1,49 @@
 module Api
   class TweetsController < ApplicationController
+    before_action :authenticate_user!, only: [:create, :destroy]
+
     def index
-      @tweets = Tweet.all.order(created_at: :desc)
+      @tweets = Tweet.includes(:user).order(created_at: :desc)
       render 'api/tweets/index'
     end
 
-    def create
-      token = cookies.signed[:twitter_session_token]
-      session = Session.find_by(token: token)
-      user = session.user
-      @tweet = user.tweets.new(tweet_params)
-
-      if @tweet.save
-        TweetMailer.notify(@tweet).deliver!
-        render 'api/tweets/create'
-      end
-    end
-
-    def destroy
-      token = cookies.signed[:twitter_session_token]
-      session = Session.find_by(token: token)
-
-      return render json: { success: false } unless session
-
-      user = session.user
-      tweet = Tweet.find_by(id: params[:id])
-
-      if tweet && (tweet.user == user) && tweet.destroy
-        render json: {
-          success: true
-        }
-      else
-        render json: {
-          success: false
-        }
-      end
+    def home_feed
+      @tweets = Tweet.includes(:user).order(likes_count: :desc).limit(20)
+      render 'api/tweets/index'
     end
 
     def index_by_user
       user = User.find_by(username: params[:username])
 
       if user
-        @tweets = user.tweets
+        @tweets = user.tweets.order(created_at: :desc)
         render 'api/tweets/index'
+      else
+        render json: { success: false, error: "User not found" }, status: :not_found
+      end
+    end
+
+    def create
+      unless current_user
+        render json: { error: "User not authenticated" }, status: :unauthorized
+        return
+      end
+
+      @tweet = current_user.tweets.new(tweet_params)
+      if @tweet.save
+        render json: { success: true, tweet: @tweet }, status: :created
+      else
+        render json: { success: false, errors: @tweet.errors.full_messages }, status: :unprocessable_entity
+      end
+    end
+
+    def destroy
+      tweet = current_user.tweets.find_by(id: params[:id])
+
+      if tweet&.destroy
+        render json: { success: true }
+      else
+        render json: { success: false, error: "Unable to delete tweet" }, status: :unprocessable_entity
       end
     end
 

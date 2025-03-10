@@ -1,0 +1,73 @@
+.feed-container {
+  max-width: 600px;
+  margin: auto;
+  padding: 20px;
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  font-family: Arial, sans-serif;
+
+  h1 {
+    text-align: center;
+    color: #333;
+  }
+
+  .tweet-box {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 8px;
+
+    textarea {
+      width: 100%;
+      min-height: 80px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      resize: none;
+      font-size: 16px;
+    }
+
+    .tweet-button {
+      margin-top: 10px;
+      padding: 10px;
+      background-color: #1da1f2;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.3s;
+
+      &:hover {
+        background-color: #0d8beb;
+      }
+    }
+  }
+
+  .tweets-list {
+    margin-top: 20px;
+
+    .tweet-card {
+      background: #fff;
+      padding: 15px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+      
+      .tweet-user {
+        font-weight: bold;
+        color: #555;
+      }
+
+      .tweet-content {
+        margin: 8px 0;
+        font-size: 16px;
+        color: #333;
+      }
+
+      .tweet-timestamp {
+        font-size: 12px;
+        color: #777;
+      }
+    }
+  }
+}

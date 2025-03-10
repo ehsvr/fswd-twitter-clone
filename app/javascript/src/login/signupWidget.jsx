@@ -16,11 +16,16 @@ class SignupWidget extends React.Component {
   }
   signup = (e) => {
     if (e) { e.preventDefault(); }
-    this.setState({
-      error: '',
-    });
+    this.setState({ error: '' });
+  
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute("content");
+  
     fetch('/api/users', safeCredentials({
       method: 'POST',
+      headers: {
+        "X-CSRF-Token": csrfToken, // Include CSRF token
+        "Content-Type": "application/json"
+      },
       body: JSON.stringify({
         user: {
           email: this.state.email,
@@ -36,11 +41,10 @@ class SignupWidget extends React.Component {
         }
       })
       .catch(error => {
-        this.setState({
-          error: 'Could not sign up.',
-        })
-      })
+        this.setState({ error: 'Could not sign up.' });
+      });
   }
+  
   login = (e) => {
     if (e) { e.preventDefault(); }
     this.setState({
